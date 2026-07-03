@@ -50,6 +50,7 @@ export default function AdminLayout() {
     { to: "/admin/products", label: "📦 ສິນຄ້າ" },
     { to: "/admin/suppliers", label: "🚚 ຜູ້ສະໜອງ" },
     { to: "/admin/purchases", label: "🛒 ໃບສັ່ງຊື້" },
+    { to: "/admin/inventory", label: "📥 ນຳເຂົ້າສິນຄ້າ" },
     {
       to: "/admin/customer-orders",
       label: "📥 ຄຳສັ່ງຊື້ລູກຄ້າ",

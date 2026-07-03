@@ -16,6 +16,7 @@ import Products from "./pages/admin/Products";
 import Employees from "./pages/admin/Employees";
 import Suppliers from "./pages/admin/Suppliers";
 import PurchaseOrders from "./pages/admin/PurchaseOrders";
+import InventoryReceive from "./pages/admin/InventoryReceive";
 import CustomerOrders from "./pages/admin/CustomerOrders";
 import Reports from "./pages/admin/Reports";
 import ApprovalQueue from "./pages/admin/ApprovalQueue";
@@ -83,6 +84,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             <Route path="suppliers" element={<Suppliers />} />
             <Route path="employees" element={<Employees />} />
             <Route path="purchases" element={<PurchaseOrders />} />
+            <Route path="inventory" element={<InventoryReceive />} />
             <Route path="customer-orders" element={<CustomerOrders />} />
             <Route path="reports" element={<Reports />} />
             <Route path="approvals" element={<ApprovalQueue />} />
