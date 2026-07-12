@@ -48,7 +48,7 @@ export default function AdminLayout() {
   const NAV = [
     { to: "/admin", label: "📊 ໜ້າຫຼັກ", end: true },
     { to: "/admin/products", label: "📦 ສິນຄ້າ" },
-    { to: "/admin/suppliers", label: "🚚 ຜູ້ສະໜອງ" },
+    { to: "/admin/suppliers", label: "🚚 ຂົນສົ່ງ" },
     { to: "/admin/purchases", label: "🛒 ໃບສັ່ງຊື້" },
     { to: "/admin/inventory", label: "📥 ນຳເຂົ້າສິນຄ້າ" },
     {
