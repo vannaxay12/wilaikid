@@ -7,39 +7,46 @@ const BASE = "http://localhost:4000";
 const fmt = (n) => `₭${Number(n || 0).toLocaleString()}`;
 
 export default function PublicShop() {
-  const { user } = useAuth();
+  const { user, ready } = useAuth(); //  ແບບໃໝ່: ເພີ່ມ ready ເຂົ້າໄປ
   const nav = useNavigate();
   const [products, setProducts] = useState([]);
   const [cats, setCats] = useState([]);
   const [catFilter, setCatFilter] = useState("");
   const [search, setSearch] = useState("");
-  const [cartCount, setCartCount] = useState(0);
+  const [failedImages, setFailedImages] = useState({}); // Tracks broken images gracefully
 
+  // Fetch products and categories on mount
   useEffect(() => {
     api
       .get("/products")
       .then((r) => setProducts(r.data))
-      .catch(() => {});
+      .catch((err) => console.error("Error fetching products:", err));
     api
       .get("/categories")
       .then((r) => setCats(r.data))
-      .catch(() => {});
+      .catch((err) => console.error("Error fetching categories:", err));
   }, []);
 
-  // ຖ້າ login ແລ້ວ redirect ໄປໜ້າທີ່ຖືກຕ້ອງ
   useEffect(() => {
-    if (!user) return;
-    if (user.role === "admin") nav("/admin", { replace: true });
-    if (user.role === "cashier") nav("/cashier", { replace: true });
-    if (user.role === "customer") nav("/customer", { replace: true });
-  }, [user]);
+    // ຖ້າລະບົບ Auth ຍັງໂຫລດບໍ່ແລ້ວ (ready ເປັນ false) ຫຼື ຍັງບໍ່ມີ user ໃຫ້ຢຸດຢູ່ໜ້ານີ້ກ່ອນ
+    if (!ready || !user || !user.role) return;
 
+    // ຖ້າ ready ແລ້ວ ແລະ ມີ user.role ແທ້ ຈຶ່ງຄ່ອຍ Redirect
+    if (user.role === "customer") nav("/customer", { replace: true });
+    else if (user.role === "admin") nav("/admin", { replace: true });
+    else if (user.role === "cashier") nav("/cashier", { replace: true });
+  }, [user, ready, nav]); // ຢ່າລືມໃສ່ ready ແລະ nav ເຂົ້າໄປໃນ Dependency Array ນຳ
+  // Client-side filtering
   const filtered = products.filter((p) => {
     const mc = !catFilter || p.category_id == catFilter;
     const ms =
       !search || p.product_name.toLowerCase().includes(search.toLowerCase());
     return mc && ms;
   });
+
+  const handleImageError = (productId) => {
+    setFailedImages((prev) => ({ ...prev, [productId]: true }));
+  };
 
   return (
     <div
@@ -110,7 +117,7 @@ export default function PublicShop() {
         }}
       >
         <div style={{ fontSize: ".95rem", opacity: 0.85, marginBottom: 6 }}>
-          🛍️ ສິນຄ້າຄຸນນະພາບ ລາຄາໂຕ
+          🛍️ ສິນຄ້າຄຸນນະພາບ ລາຄາໂດ
         </div>
         <div style={{ fontSize: "1.1rem", fontWeight: 700 }}>
           ຮ້ານໝາກຊຳ ວິໄລຄິດ — ຍິນດີຕ້ອນຮັບ
@@ -141,7 +148,7 @@ export default function PublicShop() {
               fontFamily: "var(--font)",
             }}
           >
-            เข้าสู่ระบบ
+            ເຂົ້າສູ່ລະບົບ
           </button>
           <button
             onClick={() => nav("/register/customer")}
@@ -226,7 +233,7 @@ export default function PublicShop() {
                 boxShadow: "0 2px 8px rgba(0,0,0,.06)",
               }}
             >
-              {/* Image */}
+              {/* Image Container */}
               <div
                 style={{
                   height: 130,
@@ -237,7 +244,7 @@ export default function PublicShop() {
                   overflow: "hidden",
                 }}
               >
-                {p.image ? (
+                {p.image && !failedImages[p.product_id] ? (
                   <img
                     src={BASE + p.image}
                     alt={p.product_name}
@@ -246,14 +253,13 @@ export default function PublicShop() {
                       height: "100%",
                       objectFit: "cover",
                     }}
-                    onError={(e) => {
-                      e.target.style.display = "none";
-                    }}
+                    onError={() => handleImageError(p.product_id)}
                   />
                 ) : (
                   <span style={{ fontSize: 40 }}>📦</span>
                 )}
               </div>
+
               {/* Info */}
               <div style={{ padding: "10px 12px" }}>
                 <div
