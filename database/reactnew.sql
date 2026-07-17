@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 30, 2026 at 03:20 AM
+-- Generation Time: Jul 17, 2026 at 06:01 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -46,7 +46,8 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`customer_id`, `first_name`, `last_name`, `phone`, `email`, `username`, `password_hash`, `address`, `points`, `is_active`, `created_at`) VALUES
-(1, 'ສຸວັນ', 'ດາດາ', '02451', 'ff2dff@gmail.com', 'ee', '$2a$10$i7TYvv/D3TlxrKNeSsyLSuvi5EbPVj3YkQ7m76fhWn493VtDVzhuy', NULL, 45, 1, '2026-05-15 15:39:27');
+(1, 'fggs', 'dsds', '0204568525', 'cv@gmail.com', 'sdd', '$2a$10$dnQwTOB0fi4rMdmwkRJneeMAZFZBJvIULjfP9nmHTMmsRcUkn2KR.', NULL, 478, 1, '2026-07-06 21:37:42'),
+(2, 'gdfgd', 'fgdfgd', '0204555555', 'vfgf@gmail.com', 'ffffff', '$2a$10$Q5yCThlamNmcQcG4PcQd5uw6an82BTRm/jHLjkdruv8gkkllfm5c.', NULL, 56, 1, '2026-07-12 23:12:32');
 
 -- --------------------------------------------------------
 
@@ -72,7 +73,10 @@ CREATE TABLE `customer_orders` (
 --
 
 INSERT INTO `customer_orders` (`order_id`, `order_number`, `customer_id`, `total_amount`, `payment_method`, `payment_status`, `transfer_ref`, `status`, `notes`, `created_at`) VALUES
-(1, 'ORD-20260521-7660', 1, 45000.00, 'cash', 'pending', NULL, 'pending', '', '2026-05-21 14:23:47');
+(1, 'ORD-20260706-8109', 1, 28000.00, 'cash', 'pending', NULL, 'completed', '', '2026-07-06 21:38:28'),
+(2, 'ORD-20260706-2684', 1, 450000.00, 'cash', 'pending', NULL, 'completed', '', '2026-07-06 21:48:02'),
+(3, 'ORD-20260717-9192', 2, 28000.00, 'cash', 'pending', NULL, 'completed', '', '2026-07-17 21:42:59'),
+(4, 'ORD-20260717-7287', 2, 28000.00, 'cash', 'pending', NULL, 'completed', '', '2026-07-17 21:43:07');
 
 -- --------------------------------------------------------
 
@@ -94,7 +98,10 @@ CREATE TABLE `customer_order_items` (
 --
 
 INSERT INTO `customer_order_items` (`item_id`, `order_id`, `product_id`, `qty`, `unit_price`) VALUES
-(1, 1, 11, 1, 45000.00);
+(1, 1, 10, 1, 28000.00),
+(2, 2, 11, 10, 45000.00),
+(3, 3, 10, 1, 28000.00),
+(4, 4, 10, 1, 28000.00);
 
 -- --------------------------------------------------------
 
@@ -126,8 +133,8 @@ CREATE TABLE `employees` (
 --
 
 INSERT INTO `employees` (`employee_id`, `first_name`, `last_name`, `phone`, `profile_image`, `username`, `password_hash`, `role`, `hire_date`, `is_active`, `approval_status`, `requested_role`, `reject_reason`, `approved_by`, `approved_at`, `created_at`) VALUES
-(1, 'ວິໄລ', 'ຄິດ', '020-000-0001', NULL, 'admin', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', '2023-01-01', 1, 'approved', 'cashier', NULL, NULL, NULL, '2026-05-15 15:22:13'),
-(2, 'ສົມສີ', 'ໃຈດີ', '020-000-0003', NULL, 'cashier1', '$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lh6y', 'cashier', '2024-03-01', 1, 'approved', 'cashier', NULL, NULL, NULL, '2026-05-15 15:22:13');
+(1, 'Admin', 'ຮ້ານ', '020-000-0001', NULL, 'admin', '$2b$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', '2026-01-01', 1, 'approved', 'cashier', NULL, NULL, NULL, '2026-07-05 21:35:40'),
+(2, 'ແຄດ', 'ເຊຍ', '020-000-0002', NULL, 'cashier1', '$2a$10$7EhvEqSrepudMwQ8TnVvfunpPQ8Mul//xKpWMQeh/q0e.x9IpqfU2', 'cashier', '2026-01-01', 1, 'approved', 'cashier', NULL, NULL, NULL, '2026-07-05 21:35:40');
 
 -- --------------------------------------------------------
 
@@ -144,6 +151,13 @@ CREATE TABLE `inventory_receipts` (
   `notes` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `inventory_receipts`
+--
+
+INSERT INTO `inventory_receipts` (`receipt_id`, `receipt_number`, `po_id`, `employee_id`, `received_at`, `notes`) VALUES
+(1, 'RCV-20260703-0001', NULL, 1, '2026-07-05 22:28:11', 'ນຳເຂົ້າສິນຄ້າເລີ່ມຕົ້ນ');
+
 -- --------------------------------------------------------
 
 --
@@ -158,6 +172,24 @@ CREATE TABLE `inventory_receipt_items` (
   `unit_cost` decimal(10,2) NOT NULL,
   `subtotal` decimal(12,2) GENERATED ALWAYS AS (`qty_received` * `unit_cost`) STORED
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `inventory_receipt_items`
+--
+
+INSERT INTO `inventory_receipt_items` (`ri_item_id`, `receipt_id`, `product_id`, `qty_received`, `unit_cost`) VALUES
+(1, 1, 10, 29, 25000.00),
+(2, 1, 1, 25, 18000.00),
+(3, 1, 2, 25, 18000.00),
+(4, 1, 6, 20, 18000.00),
+(5, 1, 7, 30, 13000.00),
+(6, 1, 5, 25, 20000.00),
+(7, 1, 11, 20, 40000.00),
+(8, 1, 12, 40, 3500.00),
+(9, 1, 4, 6, 35000.00),
+(10, 1, 3, 28, 33000.00),
+(11, 1, 8, 12, 26000.00),
+(12, 1, 9, 25, 13000.00);
 
 -- --------------------------------------------------------
 
@@ -188,18 +220,18 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`product_id`, `barcode`, `product_name`, `category_id`, `unit_id`, `supplier_id`, `cost_price`, `selling_price`, `stock_qty`, `min_stock_level`, `expiry_date`, `image`, `is_active`, `created_at`, `updated_at`) VALUES
-(1, '8850001', 'ເຂົ້າຫອມ 5kg', 1, 1, NULL, 45000.00, 55000.00, 15, 10, NULL, '/uploads/products/rice_5kg.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(2, '8850002', 'ນ້ຳມັນພືດ 1L', 1, 3, NULL, 11000.00, 14000.00, 2, 5, NULL, '/uploads/products/oil_1l.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(3, '8850003', 'ນ້ຳຕານ 1kg', 1, 1, NULL, 12000.00, 15000.00, 20, 10, NULL, '/uploads/products/sugar_1kg.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(4, '8850004', 'ໄຂ່ (ຈ)', 2, 6, NULL, 2500.00, 3500.00, 6, 10, NULL, '/uploads/products/egg.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(5, '8850005', 'ເກືອ 500g', 3, 1, NULL, 6000.00, 8000.00, 25, 8, NULL, '/uploads/products/salt_500g.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(6, '8850006', 'ບະຫຼີ່ຊອງ', 4, 1, NULL, 2500.00, 3500.00, 8, 10, NULL, '/uploads/products/noodle.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(7, '8850007', 'ນ້ຳດື່ມ 1.5L', 5, 3, NULL, 5000.00, 8000.00, 30, 12, NULL, '/uploads/products/water_1500ml.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(8, '8850008', 'ສົ້ມ 1kg', 6, 5, NULL, 15000.00, 20000.00, 12, 5, NULL, '/uploads/products/orange_1kg.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(9, '8850009', 'ນ້ຳປາ 700ml', 3, 3, NULL, 14000.00, 18000.00, 14, 6, NULL, '/uploads/products/fishsauce_700ml.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(10, '8850010', 'ຜັກກາດ', 6, 5, NULL, 7000.00, 10000.00, 3, 5, NULL, '/uploads/products/cabbage.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(11, '8850011', 'ຊິ້ນໝູ 500g', 2, 1, NULL, 35000.00, 45000.00, 5, 4, NULL, '/uploads/products/pork_500g.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13'),
-(12, '8850012', 'ນ້ຳດື່ມ 600ml', 5, 3, NULL, 3500.00, 5000.00, 40, 15, NULL, '/uploads/products/water_600ml.jpg', 1, '2026-05-15 15:22:13', '2026-05-15 15:22:13');
+(1, '8850001', 'ນ້ຳຕານຂາວ', 1, 1, NULL, 18000.00, 20000.00, 50, 10, NULL, '/uploads/products/prod_1784298809910.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:33:29'),
+(2, '8850002', 'ນ້ຳຕານແດງ', 1, 3, NULL, 18000.00, 20000.00, 50, 5, NULL, '/uploads/products/prod_1784298848783.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:34:09'),
+(3, '8850003', 'ແປງນົວກາບ່ວງ', 1, 1, NULL, 33000.00, 35000.00, 56, 10, NULL, '/uploads/products/prod_1784299117670.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:38:37'),
+(4, '8850004', 'ແປງນົວກາຖ້ວຍ', 1, 6, NULL, 35000.00, 45000.00, 12, 10, NULL, '/uploads/products/prod_1784299128461.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:38:48'),
+(5, '8850005', 'ນ້ຳປາແກ້ວ', 1, 1, NULL, 20000.00, 22000.00, 50, 8, NULL, '/uploads/products/prod_1784298924001.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:35:24'),
+(6, '8850006', 'ນ້ຳປາຍາງ', 1, 1, NULL, 18000.00, 20000.00, 40, 15, NULL, '/uploads/products/prod_1784298875709.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:34:35'),
+(7, '8850007', 'ນ້ຳປານ້ອຍ', 1, 3, 2, 13000.00, 15000.00, 60, 12, NULL, '/uploads/products/prod_1784298904422.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:35:04'),
+(8, '8850008', 'ແມັກກີ', 1, 5, NULL, 26000.00, 28000.00, 24, 5, NULL, '/pictures/แม็กกี้ใหย่.jpg', 1, '2026-07-05 21:35:41', '2026-07-05 22:28:12'),
+(9, '8850009', 'ແມັກກີນ້ອຍ', 1, 3, NULL, 13000.00, 15000.00, 50, 6, NULL, '/uploads/products/prod_1784299061597.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:37:41'),
+(10, '8850010', 'ຊອດແມ່ພອຍ', 1, 5, NULL, 25000.00, 28000.00, 55, 5, NULL, '/uploads/products/prod_1783871855908.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:43:56'),
+(11, '8850011', 'ນ້ຳມັນກຸກ', 1, 1, NULL, 40000.00, 45000.00, 30, 4, NULL, '/uploads/products/prod_1784298941166.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:35:41'),
+(12, '8850012', 'ໄວໄວ', 1, 1, NULL, 3500.00, 5000.00, 80, 15, NULL, '/uploads/products/prod_1784299037593.jpg', 1, '2026-07-05 21:35:41', '2026-07-17 21:37:17');
 
 -- --------------------------------------------------------
 
@@ -219,12 +251,7 @@ CREATE TABLE `product_categories` (
 --
 
 INSERT INTO `product_categories` (`category_id`, `category_name`, `description`, `created_at`) VALUES
-(1, 'ອາຫານແຫ້ງ', NULL, '2026-05-15 15:22:13'),
-(2, 'ອາຫານສົດ', NULL, '2026-05-15 15:22:13'),
-(3, 'ເຄື່ອງປຸງ', NULL, '2026-05-15 15:22:13'),
-(4, 'ອາຫານສຳເລັດຮູບ', NULL, '2026-05-15 15:22:13'),
-(5, 'ເຄື່ອງດື່ມ', NULL, '2026-05-15 15:22:13'),
-(6, 'ຜັກ-ໝາກໄມ້', NULL, '2026-05-15 15:22:13');
+(1, 'ເຄື່ອງປຸງ', NULL, '2026-07-05 21:35:39');
 
 -- --------------------------------------------------------
 
@@ -280,6 +307,18 @@ CREATE TABLE `sales` (
   `created_at` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `sales`
+--
+
+INSERT INTO `sales` (`sale_id`, `receipt_number`, `employee_id`, `sale_datetime`, `subtotal`, `discount`, `total_amount`, `amount_paid`, `change_amount`, `payment_method`, `created_at`) VALUES
+(1, 'RCP-TEST-0001', 1, '2026-07-06 10:00:00', 45000.00, 0.00, 45000.00, 50000.00, 5000.00, 'cash', '2026-07-06 21:56:04'),
+(2, 'RCP-TEST-0002', 1, '2026-07-06 11:00:00', 28000.00, 0.00, 28000.00, 30000.00, 2000.00, 'cash', '2026-07-06 21:56:04'),
+(3, 'RCP-TEST-0003', 1, '2026-07-06 14:00:00', 35000.00, 0.00, 35000.00, 35000.00, 0.00, 'transfer', '2026-07-06 21:56:04'),
+(4, 'RCP-TODAY-0001', 1, '2026-07-17 22:33:32', 65000.00, 0.00, 65000.00, 100000.00, 35000.00, 'cash', '2026-07-17 22:33:32'),
+(7, 'RCP-20260717-223516', 1, '2026-07-17 22:35:16', 62000.00, 0.00, 62000.00, 100000.00, 38000.00, 'cash', '2026-07-17 22:35:16'),
+(8, 'RCP-20260717-223522', 1, '2026-07-17 22:35:22', 62000.00, 0.00, 62000.00, 100000.00, 38000.00, 'cash', '2026-07-17 22:35:22');
+
 -- --------------------------------------------------------
 
 --
@@ -294,6 +333,23 @@ CREATE TABLE `sale_items` (
   `unit_price` decimal(10,2) NOT NULL,
   `subtotal` decimal(12,2) GENERATED ALWAYS AS (`qty` * `unit_price`) STORED
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `sale_items`
+--
+
+INSERT INTO `sale_items` (`sale_item_id`, `sale_id`, `product_id`, `qty`, `unit_price`) VALUES
+(1, 1, 1, 2, 20000.00),
+(2, 1, 2, 1, 5000.00),
+(3, 2, 3, 1, 28000.00),
+(4, 3, 5, 1, 22000.00),
+(5, 3, 6, 1, 13000.00),
+(6, 4, 1, 2, 20000.00),
+(7, 4, 5, 1, 22000.00),
+(8, 7, 1, 2, 20000.00),
+(9, 7, 5, 1, 22000.00),
+(10, 8, 1, 2, 20000.00),
+(11, 8, 5, 1, 22000.00);
 
 -- --------------------------------------------------------
 
@@ -312,11 +368,11 @@ CREATE TABLE `shop_settings` (
 --
 
 INSERT INTO `shop_settings` (`key`, `value`, `updated_at`) VALUES
-('bank_bcel', '010-1234-5678-001', '2026-06-26 15:02:45'),
-('bank_ldb', '020-8765-4321-002', '2026-06-26 15:02:45'),
-('qr_bcel', '/uploads/qr/bcel_1782464921641.jpeg', '2026-06-26 16:08:41'),
-('qr_ldb', NULL, '2026-06-26 15:02:45'),
-('shop_name', 'ຮ້ານໝາກຊຳ ວິໄລຄິດ', '2026-06-26 15:02:45');
+('bank_bcel', '010-XXXX-XXXX-XXX', '2026-07-05 21:35:41'),
+('bank_ldb', '020-XXXX-XXXX-XXX', '2026-07-05 21:35:41'),
+('qr_bcel', NULL, '2026-07-05 21:35:41'),
+('qr_ldb', NULL, '2026-07-05 21:35:41'),
+('shop_name', 'ຮ້ານຂອງໝູ່', '2026-07-05 21:35:41');
 
 -- --------------------------------------------------------
 
@@ -340,8 +396,8 @@ CREATE TABLE `suppliers` (
 --
 
 INSERT INTO `suppliers` (`supplier_id`, `supplier_name`, `contact_person`, `phone`, `email`, `address`, `is_active`, `created_at`) VALUES
-(1, 'ບໍລິສັດ ກ້າວໜ້າ ຈຳກັດ', 'ສົມໃຈ', '020-111-1111', NULL, NULL, 1, '2026-05-20 14:53:21'),
-(2, 'ຫ້າງຮ້ານ ວົງໄຊ', 'ວົງໄຊ', '020-222-2222', NULL, NULL, 1, '2026-05-20 14:53:21');
+(1, 'ຜູ້ສະໜອງທົ່ວໄປ', NULL, NULL, NULL, NULL, 1, '2026-07-05 21:35:40'),
+(2, 'ຜູ້ສະໜອງ 2', NULL, NULL, NULL, NULL, 1, '2026-07-05 21:35:40');
 
 -- --------------------------------------------------------
 
@@ -365,7 +421,11 @@ INSERT INTO `units` (`unit_id`, `unit_name`, `unit_abbr`) VALUES
 (3, 'ຕຸກ', 'ຕຸກ'),
 (4, 'ອັນ', 'ອັນ'),
 (5, 'ກິໂລ', 'ກກ'),
-(6, 'ຈ', 'ຈ');
+(6, 'ແກດ', 'ແກດ'),
+(7, 'ລັງ', 'ລັງ'),
+(8, 'ຂວດ', 'ຂວດ'),
+(9, 'ປ່ອງ', 'ປ່ອງ'),
+(10, 'ແຕະ', 'ແຕະ');
 
 --
 -- Indexes for dumped tables
@@ -408,7 +468,6 @@ ALTER TABLE `employees`
 ALTER TABLE `inventory_receipts`
   ADD PRIMARY KEY (`receipt_id`),
   ADD UNIQUE KEY `receipt_number` (`receipt_number`),
-  ADD KEY `fk_ir_po` (`po_id`),
   ADD KEY `fk_ir_emp` (`employee_id`);
 
 --
@@ -425,8 +484,7 @@ ALTER TABLE `inventory_receipt_items`
 ALTER TABLE `products`
   ADD PRIMARY KEY (`product_id`),
   ADD UNIQUE KEY `barcode` (`barcode`),
-  ADD KEY `idx_barcode` (`barcode`),
-  ADD KEY `idx_category` (`category_id`),
+  ADD KEY `fk_prod_cat` (`category_id`),
   ADD KEY `fk_prod_unit` (`unit_id`),
   ADD KEY `fk_prod_sup` (`supplier_id`);
 
@@ -442,8 +500,7 @@ ALTER TABLE `product_categories`
 ALTER TABLE `purchase_orders`
   ADD PRIMARY KEY (`po_id`),
   ADD UNIQUE KEY `po_number` (`po_number`),
-  ADD KEY `fk_po_emp` (`employee_id`),
-  ADD KEY `fk_po_sup` (`supplier_id`);
+  ADD KEY `fk_po_emp` (`employee_id`);
 
 --
 -- Indexes for table `purchase_order_items`
@@ -459,7 +516,6 @@ ALTER TABLE `purchase_order_items`
 ALTER TABLE `sales`
   ADD PRIMARY KEY (`sale_id`),
   ADD UNIQUE KEY `receipt_number` (`receipt_number`),
-  ADD KEY `idx_sale_date` (`sale_datetime`),
   ADD KEY `fk_sale_emp` (`employee_id`);
 
 --
@@ -496,19 +552,19 @@ ALTER TABLE `units`
 -- AUTO_INCREMENT for table `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `customer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `customer_orders`
 --
 ALTER TABLE `customer_orders`
-  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `order_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `customer_order_items`
 --
 ALTER TABLE `customer_order_items`
-  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `employees`
@@ -520,13 +576,13 @@ ALTER TABLE `employees`
 -- AUTO_INCREMENT for table `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
-  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `receipt_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `inventory_receipt_items`
 --
 ALTER TABLE `inventory_receipt_items`
-  MODIFY `ri_item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `ri_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `products`
@@ -538,7 +594,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `product_categories`
 --
 ALTER TABLE `product_categories`
-  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `purchase_orders`
@@ -556,13 +612,13 @@ ALTER TABLE `purchase_order_items`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `sale_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `sale_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `sale_items`
 --
 ALTER TABLE `sale_items`
-  MODIFY `sale_item_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `sale_item_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT for table `suppliers`
@@ -574,7 +630,7 @@ ALTER TABLE `suppliers`
 -- AUTO_INCREMENT for table `units`
 --
 ALTER TABLE `units`
-  MODIFY `unit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `unit_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- Constraints for dumped tables
@@ -597,8 +653,7 @@ ALTER TABLE `customer_order_items`
 -- Constraints for table `inventory_receipts`
 --
 ALTER TABLE `inventory_receipts`
-  ADD CONSTRAINT `fk_ir_emp` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`),
-  ADD CONSTRAINT `fk_ir_po` FOREIGN KEY (`po_id`) REFERENCES `purchase_orders` (`po_id`);
+  ADD CONSTRAINT `fk_ir_emp` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`);
 
 --
 -- Constraints for table `inventory_receipt_items`
@@ -619,8 +674,7 @@ ALTER TABLE `products`
 -- Constraints for table `purchase_orders`
 --
 ALTER TABLE `purchase_orders`
-  ADD CONSTRAINT `fk_po_emp` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`),
-  ADD CONSTRAINT `fk_po_sup` FOREIGN KEY (`supplier_id`) REFERENCES `suppliers` (`supplier_id`);
+  ADD CONSTRAINT `fk_po_emp` FOREIGN KEY (`employee_id`) REFERENCES `employees` (`employee_id`);
 
 --
 -- Constraints for table `purchase_order_items`
