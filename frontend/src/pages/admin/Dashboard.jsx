@@ -8,11 +8,10 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
+import api from "../../utils/api";
 
-// Currency formatter for Lao Kip
 const fmt = (n) => `₭${Number(n || 0).toLocaleString()}`;
 
-// Realistic mock data matching your SQL dump and dashboard states
 const mockDashboardData = {
   today: { revenue: 0, bills: 0 },
   month: { revenue: 108000 },
@@ -29,34 +28,11 @@ const mockDashboardData = {
   ],
   topProducts: [
     { product_name: "ນ້ຳຕານຂາວ", revenue: 40000 },
-    { product_name: "ແປງນົວກາບ່ວງ", revenue: 28000 },
+    { product_name: "ແແປງນົວກາບ່ວງ", revenue: 28000 },
     { product_name: "ນ້ຳປາແກ້ວ", revenue: 22000 },
     { product_name: "ນ້ຳປາຍາງ", revenue: 13000 },
     { product_name: "ນ້ຳຕານແດງ", revenue: 5000 },
   ],
-};
-
-// Resilient API client: uses live backend if reachable, otherwise falls back gracefully to mock data
-const api = {
-  get: async (endpoint) => {
-    try {
-      const response = await fetch(`http://localhost:4000/api${endpoint}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (!response.ok) throw new Error("Server response error");
-      const data = await response.json();
-      return { data };
-    } catch (err) {
-      console.warn(
-        "Using fallback preview data as backend server is currently unreachable:",
-        err.message,
-      );
-      return { data: mockDashboardData };
-    }
-  },
 };
 
 function StatCard({ icon, label, value, sub, color = "#1a6b3c" }) {
@@ -111,16 +87,20 @@ function StatCard({ icon, label, value, sub, color = "#1a6b3c" }) {
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
+  const [period, setPeriod] = useState("day"); // Default to 'day' (ວັນ)
 
   useEffect(() => {
     api
-      .get("/reports/dashboard")
+      .get(`/reports/dashboard?period=${period}`)
       .then((r) => setData(r.data))
       .catch((err) => {
-        console.error("Error loading dashboard data:", err);
+        console.warn(
+          "Utilizing fallback preview mock states due to backend unavailability:",
+          err,
+        );
         setData(mockDashboardData);
       });
-  }, []);
+  }, [period]);
 
   if (!data) return <div className="text-muted p-4">⏳ ກຳລັງໂຫລດ...</div>;
 
@@ -133,20 +113,24 @@ export default function Dashboard() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          marginBottom: "16px",
+          marginBottom: "24px",
         }}
       >
         <h1
           className="page-title"
-          style={{ margin: 0, fontSize: "1.75rem", fontWeight: "bold" }}
+          style={{ margin: 0, fontSize: "1.5rem", fontWeight: "bold" }}
         >
           ໜ້າຫຼັກ
         </h1>
-        <span className="text-muted text-sm" style={{ color: "#706e66" }}>
+        <span
+          className="text-muted text-sm"
+          style={{ color: "#706e66", fontSize: "0.85rem" }}
+        >
           {new Date().toLocaleDateString("lo-LA", { dateStyle: "full" })}
         </span>
       </div>
 
+      {}
       <div
         className="grid-4 mb-4"
         style={{
@@ -186,6 +170,7 @@ export default function Dashboard() {
         />
       </div>
 
+      {}
       <div
         style={{
           display: "grid",
@@ -194,7 +179,7 @@ export default function Dashboard() {
           alignItems: "start",
         }}
       >
-        {/* Weekly Revenue Line Chart Container */}
+        {}
         <div
           className="card"
           style={{
@@ -205,10 +190,56 @@ export default function Dashboard() {
             boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
           }}
         >
-          <div style={{ fontWeight: 600, marginBottom: 16, fontSize: "1rem" }}>
-            ຍອດຂາຍ 7 ວັນຜ່ານມາ
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: 16,
+            }}
+          >
+            <div style={{ fontWeight: 600, fontSize: "1rem" }}>
+              {period === "day" && "ຍອດຂາຍ 7 ວັນຜ່ານມາ"}
+              {period === "month" && "ຍອດຂາຍ 12 ເດືອນຜ່ານມາ"}
+              {period === "year" && "ຍອດຂາຍລາຍປີ"}
+            </div>
+
+            {/* Filter buttons selector */}
+            <div
+              style={{
+                display: "flex",
+                gap: "4px",
+                background: "#f5f4f0",
+                padding: "4px",
+                borderRadius: "8px",
+              }}
+            >
+              {[
+                { id: "day", label: "ວັນ" },
+                { id: "month", label: "ເດືອນ" },
+                { id: "year", label: "ປີ" },
+              ].map((btn) => (
+                <button
+                  key={btn.id}
+                  onClick={() => setPeriod(btn.id)}
+                  style={{
+                    border: "none",
+                    padding: "4px 14px",
+                    borderRadius: "6px",
+                    fontSize: "0.8rem",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                    transition: "all 0.2s ease",
+                    background: period === btn.id ? "#1a6b3c" : "transparent",
+                    color: period === btn.id ? "#fff" : "#706e66",
+                  }}
+                >
+                  {btn.label}
+                </button>
+              ))}
+            </div>
           </div>
-          {/* Fixed width to 100% to allow Recharts ResponsiveContainer to properly scale inside CSS Grid */}
+
           <div style={{ width: "100%", height: 230 }}>
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
@@ -225,7 +256,11 @@ export default function Dashboard() {
                   tick={{ fontSize: 11, fill: "#706e66" }}
                   tickLine={false}
                   tickFormatter={(v) =>
-                    v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v
+                    v >= 1000000
+                      ? `${(v / 1000000).toFixed(1)}M`
+                      : v >= 1000
+                        ? `${(v / 1000).toFixed(0)}k`
+                        : v
                   }
                 />
                 <Tooltip formatter={(v) => [fmt(v), "ຍອດຂາຍ"]} />

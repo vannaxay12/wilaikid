@@ -1,14 +1,22 @@
+// ... existing code ...
 const router = require('express').Router();
 const db = require('../db');
 const { auth, adminOnly } = require('../middleware/auth');
 
 // Dashboard
-router.get('/dashboard', auth, adminOnly, async(_, res) => {
+router.get('/dashboard', auth, adminOnly, async(req, res) => {
     try {
-        const today = new Date().toISOString().slice(0, 10);
+        // ປ່ຽນມາໃຊ້ CURDATE() ຂອງ MySQL ໂດຍກົງ ເພື່ອແກ້ໄຂບັນຫາ Timezone (ຄວາມຕ່າງຂອງເວລາ Node.js UTC ກັບ MySQL Local)
         const [
             [todaySales]
-        ] = await db.query(`SELECT COALESCE(SUM(total_amount),0) AS revenue,COUNT(*) AS bills FROM sales WHERE DATE(sale_datetime)=?`, [today]);
+        ] = await db.query(`
+            SELECT 
+                COALESCE(SUM(total_amount), 0) AS revenue, 
+                COUNT(*) AS bills 
+            FROM sales 
+            WHERE DATE(sale_datetime) = CURDATE()
+        `);
+
         const [
             [monthSales]
         ] = await db.query(`SELECT COALESCE(SUM(total_amount),0) AS revenue FROM sales WHERE MONTH(sale_datetime)=MONTH(NOW()) AND YEAR(sale_datetime)=YEAR(NOW())`);
@@ -18,32 +26,59 @@ router.get('/dashboard', auth, adminOnly, async(_, res) => {
         const [
             [totalProd]
         ] = await db.query(`SELECT COUNT(*) AS cnt FROM products WHERE is_active=1`);
-        // ປ່ຽນໃນ routes/reports.js ບ່ອນ topProducts:
+
+        // ດຶງຂໍ້ມູນສິນຄ້າຂາຍດີ Top 5 (Cast ຂໍ້ມູນເປັນຕົວເລກເພື່ອປ້ອງກັນ UI ບໍ່ສະແດງຜົນ)
         const [topProducts] = await db.query(`
-  SELECT 
-    p.product_name,
-    CAST(SUM(si.qty) AS SIGNED) AS qty_sold,
-    CAST(SUM(si.qty * si.unit_price) AS DOUBLE) AS revenue
-  FROM sale_items si 
-  JOIN products p ON si.product_id = p.product_id 
-  GROUP BY si.product_id 
-  ORDER BY revenue DESC 
-  LIMIT 5
-`);
-        // ປ່ຽນໃນ routes/reports.js ບ່ອນ dailyChart:
-        const [dailyChart] = await db.query(`
-  SELECT 
-    DATE_FORMAT(sale_datetime, '%Y-%m-%d') AS day, 
-    CAST(SUM(total_amount) AS DOUBLE) AS revenue
-  FROM sales 
-  WHERE sale_datetime >= DATE_SUB(NOW(), INTERVAL 7 DAY) 
-  GROUP BY DATE(sale_datetime) 
-  ORDER BY day ASC
-`);
+            SELECT 
+                p.product_name,
+                CAST(SUM(si.qty) AS SIGNED) AS qty_sold,
+                CAST(SUM(si.qty * si.unit_price) AS DOUBLE) AS revenue
+            FROM sale_items si 
+            JOIN products p ON si.product_id = p.product_id 
+            GROUP BY si.product_id 
+            ORDER BY revenue DESC 
+            LIMIT 5
+        `);
+
+        // ດຶງຂໍ້ມູນກຣາຟຕາມແຕ່ລະປະເພດ (ວັນ, ເດືອນ, ປີ)
+        const { period = 'day' } = req.query;
+        let chartQuery = '';
+        if (period === 'year') {
+            chartQuery = `
+                SELECT 
+                    DATE_FORMAT(sale_datetime, '%Y') AS day, 
+                    CAST(SUM(total_amount) AS DOUBLE) AS revenue
+                FROM sales 
+                GROUP BY DATE_FORMAT(sale_datetime, '%Y') 
+                ORDER BY day ASC
+            `;
+        } else if (period === 'month') {
+            chartQuery = `
+                SELECT 
+                    DATE_FORMAT(sale_datetime, '%Y-%m') AS day, 
+                    CAST(SUM(total_amount) AS DOUBLE) AS revenue
+                FROM sales 
+                WHERE sale_datetime >= DATE_SUB(NOW(), INTERVAL 12 MONTH) 
+                GROUP BY DATE_FORMAT(sale_datetime, '%Y-%m') 
+                ORDER BY day ASC
+            `;
+        } else {
+            chartQuery = `
+                SELECT 
+                    DATE_FORMAT(sale_datetime, '%Y-%m-%d') AS day, 
+                    CAST(SUM(total_amount) AS DOUBLE) AS revenue
+                FROM sales 
+                WHERE sale_datetime >= DATE_SUB(NOW(), INTERVAL 7 DAY) 
+                GROUP BY DATE(sale_datetime) 
+                ORDER BY day ASC
+            `;
+        }
+
+        const [dailyChart] = await db.query(chartQuery);
+
         res.json({ today: todaySales, month: monthSales, lowStock: lowStock.cnt, totalProducts: totalProd.cnt, topProducts, dailyChart });
     } catch (e) { res.status(500).json({ message: e.message }); }
 });
-
 // Income/Expense
 router.get('/income-expense', auth, adminOnly, async(req, res) => {
     try {
